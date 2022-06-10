@@ -1,0 +1,8 @@
+output/
+input/
+cache.json
+__pycache__/
+*.pyc
+venv/
+cache.json.backup
+debug.log
