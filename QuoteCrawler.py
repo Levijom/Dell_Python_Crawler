@@ -51,8 +51,7 @@ for quoteNumberFromList in quote_list:
         response.append({"Completed": False, "FullQuoteNumber": "Ignored"})
         continue
 
-    # Get quote from cache if it is there.  Potentially error causing
-    # Note: We don't want to modify "quoteNumberFromList" here to fit url convention
+    # Get quote from cache if it is there.
     current = cache.isQuoteCached(quoteNumberFromList)
 
     # This "if" checks if we got current from cache
@@ -61,11 +60,14 @@ for quoteNumberFromList in quote_list:
         print("Not in Cache")
 
         # "quoteNumberFromList" may need to be modified to fit url convention
+        # current will hold all the data scraped off the web-page in current["quoteNumber"], current["solutionnumber"]
+        # And so on, values are addressed by their ID.  also holds current["completed"] which a bool
         current = crawler.RunCrawler(quoteNumberFromList)
         if current["Completed"]:
             cache.addToCache(current)
             cache.saveCacheToDisk()
 
+    # response will hold a vector of current vectors, to be iterated through later
     response.append(current)
 
 spreadsheet = Spreadsheet(args.destFile, len(response))

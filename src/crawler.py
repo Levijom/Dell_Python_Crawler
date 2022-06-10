@@ -25,11 +25,13 @@ class Crawler:
             self.driver.get("https://sales.dell.com")
         except:
             time.sleep(1)
-        time.sleep(40)  # Jose added this in to get aroudn the Banner Issue, during this sleep, go to the first Quote URL https://sales.dell.com/#/quote/details/QuoteNumber/3000111672265.1
+        time.sleep(4)   # Jose added this in to get around the Banner Issue, during this sleep,
+        # go to the first Quote URL https://sales.dell.com/#/quote/details/QuoteNumber/3000111672265.1
 
     def __del__(self):
         self.driver.close()
 
+    # Returns "response" which is a tensor (high dimension vector) that holds data addressed by strings
     def RunCrawler(self, quoteNumber: str) -> dict:
 
         # This is use for url related quote numbers
@@ -40,6 +42,8 @@ class Crawler:
             "\n"
         )
         response = {}
+
+        # Note: this will have the quote with "." not "/"
         response["FullQuoteNumber"] = quoteNumber
         wait = WebDriverWait(self.driver, 90)
 
@@ -48,9 +52,15 @@ class Crawler:
             self.driver.get(url)
             self.driver.refresh()
             time.sleep(1)
+
+            # For q1-q10, it looks like we grab the element off the web-page by it's element name, and sometimes
+            # play around with text formatting, like removing a "$" or "," here and there.
+
+            # Looks like this waits for page to loa, gets "quoteNumber" from web page
             while True:
                 try:
                     q1 = wait.until(
+                        # TODO: verify "quoteNumber" is still correct ID name
                         EC.presence_of_element_located((By.ID, ("quoteNumber")))
                     )
                     if len(q1.text) != 0:
@@ -62,7 +72,10 @@ class Crawler:
             print("Quote# " + q1.text)
             response["quotenumber"] = q1.text
 
+            # The rest of these functions get the element from the web-page by it's assumed name.
+            # Possibility that the names changed, need to verify they are the same
             q2 = wait.until(
+                # TODO: get web-page source code, see if "quoteDetail_versionToggle" is used
                 EC.presence_of_element_located((By.ID, ("quoteDetail_versionToggle")))
             )
             response["quotenumberversion"] = str(q2.text.split()[1])
@@ -124,6 +137,8 @@ class Crawler:
             # Need to add the configuration of the quote
             ListSubItems = []
             numSubItems = 0
+
+            # I believe this gets all the sub-list items associated with the quote, assigns them into "ListSubItems"
             while True:  # Checking how many items are in a quote
                 SubItem = "toggleMoreLess_0_" + str(numSubItems)
                 print(SubItem)
