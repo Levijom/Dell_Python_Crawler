@@ -201,7 +201,7 @@ class Spreadsheet:
                         continue
                     except:
                         i = 1
-                    if customerReady == False:
+                    if not customerReady:
                         columnToWrite = 6 if aux else 7
                     else:
                         columnToWrite = 2 if aux else 3

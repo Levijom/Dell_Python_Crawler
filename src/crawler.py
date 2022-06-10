@@ -31,7 +31,12 @@ class Crawler:
         self.driver.close()
 
     def RunCrawler(self, quoteNumber: str) -> dict:
-        url = "https://sales.dell.com/#/quote/details/QuoteNumber/" + quoteNumber.strip(
+
+        # This is use for url related quote numbers
+        urlQuoteNumber = quoteNumber.split()[0].strip("US-").replace(".", "/")
+
+        # Modified this to fit the url convention
+        url = "https://sales.dell.com/#/quote/details/QuoteNumber/" + urlQuoteNumber.strip(
             "\n"
         )
         response = {}
@@ -42,7 +47,7 @@ class Crawler:
             print("Trying quote #" + quoteNumber.strip("\n"))
             self.driver.get(url)
             self.driver.refresh()
-            #time.sleep(15)
+            time.sleep(1)
             while True:
                 try:
                     q1 = wait.until(
